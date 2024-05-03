@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space KB Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  </head>
+
+<body> 
+
+    
+    <div class="container" id="container">
+        <div class="logo">
+        <img src="logo.png" alt="logo"/>
+            </div>
+                <div>
+                    <div class="form-container sign-up-container">
+                            <form action="#">
+                                <input type="email" placeholder="Email" id="email" />
+                                <span id="error-email"></span>
+                                <input type="password" placeholder="Password" id="password"/>
+                                <span id="error-password"></span>
+                                <button id="register">Sign Up</button>
+                            </form>
+                        </div>
+                        <div class="form-container sign-in-container">
+                            <form action="#">
+                                <input type="email" placeholder="Email" id="login-email" />
+                                <span id="login-error-email"></span>
+                                <input type="password" placeholder="Password" id="login-password"/>
+                                <span id="login-error-password"></span>
+                                <button id="sign-in">Sign In</button>
+                            </form>
+                        </div>
+                        <div class="overlay-container">
+                            <div class="overlay">
+                                <div class="overlay-panel overlay-left">
+                                    <h1>Welcome Back!</h1>
+                                    <p>To keep connected with us please login with your personal info</p>
+                                    <button class="ghost" id="signIn">Sign In</button>
+                                </div>
+                                <div class="overlay-panel overlay-right">
+                                    <h1>Hello, Keyboard Warriors!</h1>
+                                    <p>Start your Keyboard journey with us</p>
+                                    <button class="ghost" id="signUp">Sign Up</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </img>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/6.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.0/firebase-firestore.js"></script>
+    <script src="/login.js"></script>
+   
+<body>     
+    <script>
+        var firebaseConfig = {
+        apiKey: "AIzaSyDG_C8mmX2FXkT7NXMBpSBD7TA6pagWZkE",
+        authDomain: "delostricoho3.firebaseapp.com",
+        databaseURL: "https://delostricoho3-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "delostricoho3",
+        storageBucket: "delostricoho3.appspot.com",
+        messagingSenderId: "542279358402",
+        appId: "1:542279358402:web:8b808b7afde666168e285b",
+        measurementId: "G-7XCGVDQKKJ"
+        };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+   </script>
+    <script>
+        // register
+        document
+          .querySelector("#register")
+          .addEventListener("click", function(e) {
+            e.preventDefault();
+            
+            let email = document.querySelector("#email").value;
+            let password = document.querySelector("#password").value;
+            if (email.length<1) {
+          document.getElementById('error-email').innerHTML = " Please Enter Your Email *";
+      }
+      if (password.length<1) {
+          document.getElementById('error-password').innerHTML = " Please Enter Your password *";
+      }
+            firebase
+              .auth()
+              .createUserWithEmailAndPassword(email, password)
+              .then(data =>{
+                  console.log("hello success",data.user)
+                  if(data.user){
+                      window.location.href="/index1.html"
+                  }
+              })
+              .catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                document.getElementById('error-password').innerHTML = errorMessage;
+              });
+          });
+        //sign in
+        document.querySelector("#sign-in")
+        .addEventListener("click", function(e)
+         {
+          e.preventDefault();
+          e.stopPropagation();
+          let email = document.querySelector("#login-email").value;
+          let password = document.querySelector("#login-password").value;
+          if (email.length<1) {
+          document.getElementById('login-error-email').innerHTML = " Please Enter Your Email *";
+           }
+          if (password.length<1) {
+              document.getElementById('login-error-password').innerHTML = " Please Enter Your password *";
+          }
+          firebase.auth().signInWithEmailAndPassword(email, password)
+          .then(data =>{
+                  console.log("hello success",data.user.uid)
+                  var uid = data.user.uid;
+                  // alert(uid);
+                  if(data.user){
+                      console.log("save into firebase" , uid);
+                      
+                      db.collection("users")
+                          .add({
+                          email: data.user.email,
+                          uid: data.user.uid
+                      
+                          
+                          })
+                          .then(function(docRef) {
+                              console.log(docRef);
+                              window.location.href="/index1.html"
+                          })
+                          .catch(function(error) {
+                              //alert(error);
+                          console.error("Error adding document: ", error);
+                          });          
+                      
+                  }
+          })
+          .catch(function(error) {
+          // Handle Errors here.
+          let errorCode = error.code;
+          let errorMessage = error.message;
+          });
+        });
+  
+  //log out
+        document
+          .querySelector("#sign-out")
+          .addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            alert("logout");
+          });
+      </script>
+      
+</body>
+</html>
